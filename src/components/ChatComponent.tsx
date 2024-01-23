@@ -12,7 +12,7 @@ import { Message } from "ai";
 type Props = { chatId: number };
 
 const ChatComponent = ({ chatId }: Props) => {
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["chat", chatId],
     queryFn: async () => {
       const response = await axios.post<Message[]>("/api/get-messages", {
@@ -48,7 +48,7 @@ const ChatComponent = ({ chatId }: Props) => {
       <div className="sticky top-0 inset-x-0 p-2 bg-white h-fit">
         <h3 className="text-xl font-bold"> Chat</h3>
       </div>
-      <MessagesList messages={messages}></MessagesList>
+      <MessagesList messages={messages} isLoading={isLoading}></MessagesList>
 
       <form
         onSubmit={handleSubmit}
