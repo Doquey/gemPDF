@@ -5,7 +5,7 @@ import { auth, currentUser } from "@clerk/nextjs";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-const return_url = process.env.NEXT_BASE_URL + "/";
+const return_url = process.env.NEXT_BASE_URL
 
 export async function GET() {
   try {
