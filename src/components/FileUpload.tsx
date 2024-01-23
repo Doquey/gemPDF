@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 const FileUpload = () => {
   const router = useRouter();
   const [uploading, setUploading] = React.useState(false);
-  const { mutate, isLoading } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: async ({
       file_key,
       file_name,
