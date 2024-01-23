@@ -34,7 +34,7 @@ export default async function Home() {
           </div>
 
           <div className="flex mt-1">
-            {isAuth && (
+            {isAuth && firstChat &&(
               <Link href={`/chat/${firstChat.id}`}>
                 <Button>Ir para Chats</Button>
               </Link>
