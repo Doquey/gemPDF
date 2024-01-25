@@ -8,16 +8,23 @@ import { chats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { checkSubscription } from "@/lib/subscription";
 import SubscriptionButton from "@/components/SubscriptionButton";
+import { getChats } from "@/lib/getChats";
 
 export default async function Home() {
   const { userId }: { userId: string | null } = auth();
   const isPro = await checkSubscription();
   let firstChat;
+  let possibleUserChats;
+  let userChats;
   if (userId) {
     firstChat = await db.select().from(chats).where(eq(chats.userId, userId));
+    possibleUserChats = await getChats(userId);
     if (firstChat) {
       firstChat = firstChat[0];
     }
+  }
+  if (possibleUserChats) {
+    userChats = possibleUserChats;
   }
 
   const isAuth = !!userId;
@@ -34,7 +41,7 @@ export default async function Home() {
           </div>
 
           <div className="flex mt-1">
-            {isAuth && firstChat &&(
+            {isAuth && firstChat && (
               <Link href={`/chat/${firstChat.id}`}>
                 <Button>Ir para Chats</Button>
               </Link>
@@ -50,7 +57,7 @@ export default async function Home() {
           </p>
           <div className="w-full mt-4">
             {isAuth ? (
-              <FileUpload />
+              <FileUpload numberChatsDay={userChats} isPro={isPro} />
             ) : (
               <Link href="/sign-in">
                 <Button>

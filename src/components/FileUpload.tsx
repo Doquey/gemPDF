@@ -7,11 +7,21 @@ import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { checkSubscription } from "@/lib/subscription";
 
 // https://github.com/aws/aws-sdk-js-v3/issues/4126
 
-const FileUpload = () => {
+// this will receive the number of created chats for the day, and check if its smaller than 1 or if the user is pro. If any of these
+// are acceppted then the user can upload a new file.
+
+type Props = {
+  numberChatsDay: number | undefined;
+  isPro: boolean;
+};
+
+const FileUpload = ({ numberChatsDay, isPro }: Props) => {
   const router = useRouter();
+  console.log(numberChatsDay);
   const [uploading, setUploading] = React.useState(false);
   const { mutate } = useMutation({
     mutationFn: async ({
@@ -39,6 +49,15 @@ const FileUpload = () => {
         toast.error("File too large");
         return;
       }
+      if (numberChatsDay !== undefined) {
+        if (
+          (!isPro && numberChatsDay >= 1) ||
+          (isPro && numberChatsDay >= 20)
+        ) {
+          toast.error("You have reached the daily upload limit.");
+          return;
+        }
+      }
 
       try {
         setUploading(true);
@@ -65,12 +84,16 @@ const FileUpload = () => {
       }
     },
   });
+
   return (
     <div className="p-2 bg-white rounded-xl">
       <div
         {...getRootProps({
-          className:
-            "border-dashed border-2 rounded-xl cursor-pointer bg-gray-50 py-8 flex justify-center items-center flex-col",
+          className: `border-dashed border-2 rounded-xl cursor-pointer bg-gray-50 py-8 flex justify-center items-center flex-col ${
+            uploading ? "opacity-50" : "" // Add opacity when uploading
+          }`,
+          // Add the disabled attribute based on the uploading state
+          disabled: uploading,
         })}
       >
         <input {...getInputProps()} />
